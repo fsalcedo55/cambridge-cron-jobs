@@ -22,3 +22,6 @@ cron.schedule("0 0 * * *", () => {
 console.log(
   "Reminder service started. Checking calendars every 15 minutes and clearing reminders daily at midnight."
 )
+
+console.log("Application starting...")
+console.log("Node environment:", process.env.NODE_ENV)

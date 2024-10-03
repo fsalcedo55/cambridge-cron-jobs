@@ -3,10 +3,19 @@ const { google } = require("googleapis")
 const SCOPES = ["https://www.googleapis.com/auth/calendar.readonly"]
 
 async function authorize() {
+  const clientEmail = process.env.GOOGLE_CLIENT_EMAIL
+  const privateKey = process.env.GOOGLE_PRIVATE_KEY
+
+  if (!clientEmail || !privateKey) {
+    throw new Error(
+      "GOOGLE_CLIENT_EMAIL or GOOGLE_PRIVATE_KEY environment variables are not set"
+    )
+  }
+
   const jwtClient = new google.auth.JWT(
-    process.env.GOOGLE_CLIENT_EMAIL,
+    clientEmail,
     null,
-    process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, "\n"),
+    privateKey.replace(/\\n/g, "\n"),
     SCOPES
   )
 

@@ -9,8 +9,8 @@ class ReminderJob {
   }
 
   async run() {
-    console.log("Running reminder job class...")
     try {
+      console.log("Running reminder job class...")
       const auth = await authorize()
       console.log("Authorization successful")
       const now = new Date()
@@ -46,7 +46,9 @@ class ReminderJob {
         }
       }
     } catch (error) {
-      console.error("Error in reminder job:", error)
+      console.error("Error in reminder job:", error.message)
+      console.error("Stack trace:", error.stack)
+      // You might want to add some error reporting here
     }
   }
 
