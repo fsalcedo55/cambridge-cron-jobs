@@ -36,7 +36,13 @@ class ReminderJob {
             await this.sendReminderForEvent(event)
           }
         } catch (error) {
-          console.error(`Error processing calendar ${calendarId}:`, error)
+          console.error(
+            `Error processing calendar ${calendarId}:`,
+            error.message
+          )
+          if (error.response) {
+            console.error("Response data:", error.response.data)
+          }
         }
       }
     } catch (error) {
@@ -45,7 +51,6 @@ class ReminderJob {
   }
 
   async sendReminderForEvent(event) {
-    // Check if the event summary contains the word "cancel" (case-insensitive)
     if (event.summary && event.summary.toLowerCase().includes("cancel")) {
       console.log(`Skipping reminder for cancelled event: ${event.summary}`)
       return
@@ -53,16 +58,11 @@ class ReminderJob {
 
     function getFirstTwoWords(str) {
       const words = str.split(" ")
-      const firstTwo = words.slice(0, 2)
-
-      return firstTwo.join(" ")
+      return words.slice(0, 2).join(" ")
     }
 
     function getFirstWord(str) {
-      const words = str.split(" ")
-      const firstWord = words[0]
-
-      return firstWord
+      return str.split(" ")[0]
     }
 
     function getTeacherName(str) {
@@ -80,15 +80,9 @@ class ReminderJob {
       }
     }
 
-    // Parse the ISO strings into Date objects
     const startDate = new Date(event.start.dateTime)
     const endDate = new Date(event.end.dateTime)
-
-    // Calculate the difference in milliseconds
-    const diffInMs = endDate - startDate
-
-    // Convert milliseconds to minutes
-    const durationInMinutes = diffInMs / (1000 * 60)
+    const durationInMinutes = (endDate - startDate) / (1000 * 60)
 
     const eventId = event.id
     const eventDateTime = event.start.dateTime
@@ -102,6 +96,7 @@ class ReminderJob {
     console.log(
       `Sending reminders for event: ${event.summary} (ID: ${eventId})`
     )
+    console.log(`Event details:`, JSON.stringify(event, null, 2))
 
     let notifiedEmails = this.remindersSent.get(eventId) || new Map()
 
@@ -110,38 +105,41 @@ class ReminderJob {
       return
     }
 
+    console.log(`Number of attendees: ${event.attendees.length}`)
+
     for (let attendee of event.attendees) {
-      // Skip the organizer
       if (attendee.email === organizerEmail) {
         console.log(`Skipping organizer: ${attendee.email}`)
         continue
       }
 
-      console.log("event: ", event)
-
       console.log(`Processing attendee: ${attendee.email}`)
       const lastNotifiedDateTime = notifiedEmails.get(attendee.email)
 
       if (!lastNotifiedDateTime || lastNotifiedDateTime !== eventDateTime) {
-        console.log(`Sending email to ${attendee.email}`)
-        const emailSent = await this.emailService.sendEmail(
-          attendee.email,
-          `🔔 Reminder: ${studentFirstName}’s Upcoming Spanish Class`,
-          {
-            studentName: studentName,
-            eventDateTime: eventDateTime,
-            eventLocation: eventLocation,
-            eventTimezone: event.start.timeZone,
-            eventDuration: eventDuration,
-            teacherName: teacherName,
-          }
-        )
+        console.log(`Attempting to send email to ${attendee.email}`)
+        try {
+          const emailSent = await this.emailService.sendEmail(
+            attendee.email,
+            `🔔 Reminder: ${studentFirstName}'s Upcoming Spanish Class`,
+            {
+              studentName: studentName,
+              eventDateTime: eventDateTime,
+              eventLocation: eventLocation,
+              eventTimezone: event.start.timeZone,
+              eventDuration: eventDuration,
+              teacherName: teacherName,
+            }
+          )
 
-        if (emailSent) {
-          console.log(`Email sent successfully to ${attendee.email}`)
-          notifiedEmails.set(attendee.email, eventDateTime)
-        } else {
-          console.log(`Failed to send email to ${attendee.email}`)
+          if (emailSent) {
+            console.log(`Email sent successfully to ${attendee.email}`)
+            notifiedEmails.set(attendee.email, eventDateTime)
+          } else {
+            console.log(`Failed to send email to ${attendee.email}`)
+          }
+        } catch (error) {
+          console.error(`Error sending email to ${attendee.email}:`, error)
         }
       } else {
         console.log(`Skipping email for ${attendee.email} - already notified`)
