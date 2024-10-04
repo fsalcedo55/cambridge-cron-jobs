@@ -1,7 +1,7 @@
 const React = require("react")
 import PropTypes from "prop-types"
-import { format, parseISO } from "date-fns"
-import { zonedTimeToUtc, formatInTimeZone } from "date-fns-tz"
+import { parseISO } from "date-fns"
+import { formatInTimeZone } from "date-fns-tz"
 
 const ReminderEmail = ({
   studentName,
@@ -20,11 +20,6 @@ const ReminderEmail = ({
     eventTimezone,
     "EEEE, MMMM d, yyyy 'at' h:mm a"
   )
-
-  // Format the timezone in a more user-friendly way
-  const formattedTimezone = format(zonedTimeToUtc(date, eventTimezone), "zzz", {
-    timeZone: eventTimezone,
-  })
 
   return (
     <html>
@@ -56,10 +51,7 @@ const ReminderEmail = ({
             <p
               style={{ fontSize: "16px", color: "#666", marginBottom: "20px" }}
             >
-              ⏰ Timezone:{" "}
-              <strong>
-                {formattedTimezone} ({eventTimezone})
-              </strong>
+              ⏰ Timezone: <strong>{eventTimezone}</strong>
             </p>
             <p
               style={{ fontSize: "16px", color: "#666", marginBottom: "20px" }}
