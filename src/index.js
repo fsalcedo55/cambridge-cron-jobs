@@ -25,3 +25,15 @@ console.log(
 
 console.log("Application starting...")
 console.log("Node environment:", process.env.NODE_ENV)
+
+console.log(
+  "GOOGLE_CLIENT_EMAIL:",
+  process.env.GOOGLE_CLIENT_EMAIL ? "Set" : "Not set"
+)
+console.log(
+  "GOOGLE_PRIVATE_KEY:",
+  process.env.GOOGLE_PRIVATE_KEY ? "Set" : "Not set"
+)
+console.log("EMAIL_USER:", process.env.EMAIL_USER ? "Set" : "Not set")
+console.log("EMAIL_PASS:", process.env.EMAIL_PASS ? "Set" : "Not set")
+console.log("All environment variables:", Object.keys(process.env))
