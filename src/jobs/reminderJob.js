@@ -36,7 +36,11 @@ class ReminderJob {
           )
 
           for (let event of events) {
-            console.log(`Processing event: ${event.summary} (ID: ${event.id})`)
+            console.log(
+              `Processing event: ${event.summary || "Unnamed event"} (ID: ${
+                event.id
+              })`
+            )
             await this.sendReminderForEvent(event)
           }
         } catch (error) {
@@ -51,10 +55,17 @@ class ReminderJob {
   }
 
   async sendReminderForEvent(event) {
-    // Add logging here
-    console.log(`Sending reminder for event: ${event.summary}`)
-    if (event.summary && event.summary.toLowerCase().includes("cancel")) {
-      console.log(`Skipping reminder for cancelled event: ${event.summary}`)
+    console.log(
+      `Processing event: ${event.summary || "Unnamed event"} (ID: ${event.id})`
+    )
+
+    if (!event.summary) {
+      console.log(`Skipping event with no summary: ${event.id}`)
+      return
+    }
+
+    if (event.summary.toLowerCase().includes("cancel")) {
+      console.log(`Skipping cancelled event: ${event.summary}`)
       return
     }
 
@@ -89,16 +100,21 @@ class ReminderJob {
     const eventId = event.id
     const eventDateTime = event.start.dateTime
     const eventDuration = durationInMinutes
-    const eventLocation = event.location
+    const eventLocation = event.location || "No location specified"
     const organizerEmail = event.organizer.email
     const teacherName = getTeacherName(event.organizer.email)
     const studentName = getFirstTwoWords(event.summary)
     const studentFirstName = getFirstWord(event.summary)
 
     console.log(
-      `Sending reminders for event: ${event.summary} (ID: ${eventId})`
+      `Event details: ${JSON.stringify({
+        id: event.id,
+        summary: event.summary,
+        start: event.start,
+        end: event.end,
+        attendees: event.attendees ? event.attendees.length : 0,
+      })}`
     )
-    console.log(`Event details :`, JSON.stringify(event, null, 2))
 
     let notifiedEmails = this.remindersSent.get(eventId) || new Map()
 
@@ -115,11 +131,21 @@ class ReminderJob {
         continue
       }
 
-      console.log(`Processing attendee: ${attendee.email}`)
+      console.log(
+        `Processing attendee: ${attendee.email.replace(
+          /^(.{2})(.*)(@.*)$/,
+          "$1****$3"
+        )}`
+      )
       const lastNotifiedDateTime = notifiedEmails.get(attendee.email)
 
       if (!lastNotifiedDateTime || lastNotifiedDateTime !== eventDateTime) {
-        console.log(`Attempting to send email to ${attendee.email}`)
+        console.log(
+          `Attempting to send email to ${attendee.email.replace(
+            /^(.{2})(.*)(@.*)$/,
+            "$1****$3"
+          )}`
+        )
         try {
           const emailSent = await this.emailService.sendEmail(
             attendee.email,
@@ -135,16 +161,37 @@ class ReminderJob {
           )
 
           if (emailSent) {
-            console.log(`Email sent successfully to ${attendee.email}`)
+            console.log(
+              `Email sent successfully to ${attendee.email.replace(
+                /^(.{2})(.*)(@.*)$/,
+                "$1****$3"
+              )}`
+            )
             notifiedEmails.set(attendee.email, eventDateTime)
           } else {
-            console.log(`Failed to send email to ${attendee.email}`)
+            console.log(
+              `Failed to send email to ${attendee.email.replace(
+                /^(.{2})(.*)(@.*)$/,
+                "$1****$3"
+              )}`
+            )
           }
         } catch (error) {
-          console.error(`Error sending email to ${attendee.email}:`, error)
+          console.error(
+            `Error sending email to ${attendee.email.replace(
+              /^(.{2})(.*)(@.*)$/,
+              "$1****$3"
+            )}:`,
+            error
+          )
         }
       } else {
-        console.log(`Skipping email for ${attendee.email} - already notified`)
+        console.log(
+          `Skipping email for ${attendee.email.replace(
+            /^(.{2})(.*)(@.*)$/,
+            "$1****$3"
+          )} - already notified`
+        )
       }
     }
 
