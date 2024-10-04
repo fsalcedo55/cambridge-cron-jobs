@@ -98,7 +98,7 @@ class ReminderJob {
     console.log(
       `Sending reminders for event: ${event.summary} (ID: ${eventId})`
     )
-    console.log(`Event details:`, JSON.stringify(event, null, 2))
+    console.log(`Event details :`, JSON.stringify(event, null, 2))
 
     let notifiedEmails = this.remindersSent.get(eventId) || new Map()
 
