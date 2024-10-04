@@ -7,6 +7,16 @@ const ReminderJob = require("./jobs/reminderJob")
 
 const reminderJob = new ReminderJob()
 
+console.log("Loading environment variables...")
+console.log("NODE_ENV:", process.env.NODE_ENV)
+console.log("GOOGLE_CLIENT_EMAIL:", process.env.GOOGLE_CLIENT_EMAIL)
+console.log(
+  "GOOGLE_PRIVATE_KEY:",
+  process.env.GOOGLE_PRIVATE_KEY
+    ? "Set (length: " + process.env.GOOGLE_PRIVATE_KEY.length + ")"
+    : "Not set"
+)
+
 // Schedule the reminder job to run every 15 minutes
 cron.schedule("* * * * *", async () => {
   console.log("Running reminder job...")

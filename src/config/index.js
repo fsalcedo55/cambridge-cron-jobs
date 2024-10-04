@@ -2,6 +2,7 @@ const dotenv = require("dotenv")
 // const config = require("./config")
 
 dotenv.config()
+console.log("Dotenv config loaded")
 
 export const teacherEmails = [
   process.env.TEACHER_EMAIL_1,

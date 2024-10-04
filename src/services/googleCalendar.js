@@ -3,13 +3,14 @@ const { google } = require("googleapis")
 const SCOPES = ["https://www.googleapis.com/auth/calendar.readonly"]
 
 async function authorize() {
-  console.log(
-    "GOOGLE_CLIENT_EMAIL:",
-    process.env.GOOGLE_CLIENT_EMAIL ? "Set" : "Not set"
-  )
+  console.log("Environment variables:")
+  console.log("NODE_ENV:", process.env.NODE_ENV)
+  console.log("GOOGLE_CLIENT_EMAIL:", process.env.GOOGLE_CLIENT_EMAIL)
   console.log(
     "GOOGLE_PRIVATE_KEY:",
-    process.env.GOOGLE_PRIVATE_KEY ? "Set" : "Not set"
+    process.env.GOOGLE_PRIVATE_KEY
+      ? "Set (length: " + process.env.GOOGLE_PRIVATE_KEY.length + ")"
+      : "Not set"
   )
 
   const clientEmail = process.env.GOOGLE_CLIENT_EMAIL
