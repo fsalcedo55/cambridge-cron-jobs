@@ -1,5 +1,5 @@
 const dotenv = require("dotenv")
-const config = require("./config")
+// const config = require("./config")
 
 dotenv.config()
 
@@ -10,16 +10,7 @@ export const teacherEmails = [
   process.env.TEACHER_EMAIL_4,
 ].filter(Boolean)
 
-console.log("Config loaded:")
-console.log("Email user:", config.email.user ? "Set" : "Not set")
-console.log("Email pass:", config.email.pass ? "Set" : "Not set")
-console.log(
-  "Google client email:",
-  config.google.clientEmail ? "Set" : "Not set"
-)
-console.log("Google private key:", config.google.privateKey ? "Set" : "Not set")
-
-module.exports = {
+const config = {
   email: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
@@ -32,3 +23,14 @@ module.exports = {
     privateKey: process.env.GOOGLE_PRIVATE_KEY,
   },
 }
+
+console.log("Config loaded:")
+console.log("Email user:", config.email.user ? "Set" : "Not set")
+console.log("Email pass:", config.email.pass ? "Set" : "Not set")
+console.log(
+  "Google client email:",
+  config.google.clientEmail ? "Set" : "Not set"
+)
+console.log("Google private key:", config.google.privateKey ? "Set" : "Not set")
+
+module.exports = config
