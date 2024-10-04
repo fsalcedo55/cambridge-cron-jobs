@@ -51,7 +51,6 @@ class ReminderJob {
   }
 
   async sendReminderForEvent(event) {
-    console.log(`Sending reminder for event: ${event.summary}`)
     // Add logging here
     console.log(`Sending reminder for event: ${event.summary}`)
     if (event.summary && event.summary.toLowerCase().includes("cancel")) {

@@ -2,36 +2,45 @@ const dotenv = require("dotenv")
 // const config = require("./config")
 
 dotenv.config()
-console.log("Dotenv config loaded")
 
-export const teacherEmails = [
-  process.env.TEACHER_EMAIL_1,
-  process.env.TEACHER_EMAIL_2,
-  process.env.TEACHER_EMAIL_3,
-  process.env.TEACHER_EMAIL_4,
-].filter(Boolean)
+console.log("Dotenv config loaded")
+console.log("Environment variables:")
+console.log("EMAIL_USER:", process.env.EMAIL_USER ? "Set" : "Not set")
+console.log("EMAIL_PASS:", process.env.EMAIL_PASS ? "Set" : "Not set")
+console.log(
+  "GOOGLE_CLIENT_EMAIL:",
+  process.env.GOOGLE_CLIENT_EMAIL ? "Set" : "Not set"
+)
+console.log(
+  "GOOGLE_PRIVATE_KEY:",
+  process.env.GOOGLE_PRIVATE_KEY ? "Set" : "Not set"
+)
 
 const config = {
   email: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
   },
-  teacherEmails,
-  calendars: ["primary", ...teacherEmails],
-  reminderWindow: 2 * 60 * 60 * 1000, // 2 hours in milliseconds
+  teacherEmails: [
+    // process.env.TEACHER_EMAIL_1,
+    // process.env.TEACHER_EMAIL_2,
+    // process.env.TEACHER_EMAIL_3,
+    process.env.TEACHER_EMAIL_4,
+  ].filter(Boolean),
+  calendars: [
+    "primary",
+    // process.env.TEACHER_EMAIL_1,
+    // process.env.TEACHER_EMAIL_2,
+    // process.env.TEACHER_EMAIL_3,
+    process.env.TEACHER_EMAIL_4,
+  ],
+  reminderWindow: 7200000, // 2 hours in milliseconds
   google: {
     clientEmail: process.env.GOOGLE_CLIENT_EMAIL,
     privateKey: process.env.GOOGLE_PRIVATE_KEY,
   },
 }
 
-console.log("Config loaded:")
-console.log("Email user:", config.email.user ? "Set" : "Not set")
-console.log("Email pass:", config.email.pass ? "Set" : "Not set")
-console.log(
-  "Google client email:",
-  config.google.clientEmail ? "Set" : "Not set"
-)
-console.log("Google private key:", config.google.privateKey ? "Set" : "Not set")
+console.log("Config loaded:", JSON.stringify(config, null, 2))
 
 module.exports = config
