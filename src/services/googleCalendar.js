@@ -10,14 +10,6 @@ async function authorize() {
     process.env.RAILWAY_STATIC_URL ? "Yes" : "No"
   )
   console.log("Node environment:", process.env.NODE_ENV)
-  console.log("Google config:", JSON.stringify(config.google, null, 2))
-  console.log("GOOGLE_CLIENT_EMAIL from env:", process.env.GOOGLE_CLIENT_EMAIL)
-  console.log(
-    "GOOGLE_PRIVATE_KEY from env:",
-    process.env.GOOGLE_PRIVATE_KEY
-      ? "Set (length: " + process.env.GOOGLE_PRIVATE_KEY.length + ")"
-      : "Not set"
-  )
 
   const clientEmail = config.google.clientEmail
   const privateKey = config.google.privateKey

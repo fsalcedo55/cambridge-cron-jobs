@@ -2,18 +2,15 @@ require("@babel/register")({
   presets: ["@babel/preset-env", "@babel/preset-react"],
 })
 
-const config = require("./config")
 const cron = require("node-cron")
 const ReminderJob = require("./jobs/reminderJob")
 
 console.log("Application starting...")
-console.log("Node environment:", process.env.NODE_ENV)
-console.log("Config loaded:", config)
 
 const reminderJob = new ReminderJob()
 
 // Schedule the reminder job to run every 15 minutes
-cron.schedule("* * * * *", async () => {
+cron.schedule("*/15 * * * *", async () => {
   console.log("Cron job triggered: Running reminder job...")
   try {
     await reminderJob.run()
