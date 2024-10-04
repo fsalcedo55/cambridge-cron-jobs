@@ -1,6 +1,7 @@
 const React = require("react")
 import PropTypes from "prop-types"
 import { format, parseISO } from "date-fns"
+import { zonedTimeToUtc, formatInTimeZone } from "date-fns-tz"
 
 const ReminderEmail = ({
   studentName,
@@ -13,8 +14,17 @@ const ReminderEmail = ({
   // Parse the ISO string to a Date object
   const date = parseISO(eventDateTime)
 
-  // Format the date
-  const formattedDate = format(date, "EEEE, MMMM d, yyyy 'at' h:mm a")
+  // Format the date without timezone information
+  const formattedDate = formatInTimeZone(
+    date,
+    eventTimezone,
+    "EEEE, MMMM d, yyyy 'at' h:mm a"
+  )
+
+  // Format the timezone in a more user-friendly way
+  const formattedTimezone = format(zonedTimeToUtc(date, eventTimezone), "zzz", {
+    timeZone: eventTimezone,
+  })
 
   return (
     <html>
@@ -46,7 +56,10 @@ const ReminderEmail = ({
             <p
               style={{ fontSize: "16px", color: "#666", marginBottom: "20px" }}
             >
-              ⏰ Timezone: <strong>{eventTimezone}</strong>
+              ⏰ Timezone:{" "}
+              <strong>
+                {formattedTimezone} ({eventTimezone})
+              </strong>
             </p>
             <p
               style={{ fontSize: "16px", color: "#666", marginBottom: "20px" }}
@@ -131,12 +144,12 @@ const ReminderEmail = ({
 }
 
 ReminderEmail.propTypes = {
-  studentName: PropTypes.string,
-  eventDateTime: PropTypes.string,
-  eventLocation: PropTypes.string,
-  eventTimezone: PropTypes.string,
-  eventDuration: PropTypes.string,
-  teacherName: PropTypes.string,
+  studentName: PropTypes.string.isRequired,
+  eventDateTime: PropTypes.string.isRequired,
+  eventLocation: PropTypes.string.isRequired,
+  eventTimezone: PropTypes.string.isRequired,
+  eventDuration: PropTypes.string.isRequired,
+  teacherName: PropTypes.string.isRequired,
 }
 
 module.exports = ReminderEmail

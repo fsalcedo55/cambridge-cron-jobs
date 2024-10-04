@@ -4,6 +4,9 @@ const EmailService = require("../emailService")
 const nodemailer = require("nodemailer")
 
 jest.mock("nodemailer")
+jest.mock("date-fns-tz", () => ({
+  utcToZonedTime: jest.fn((date) => date),
+}))
 
 describe("EmailService", () => {
   let emailService

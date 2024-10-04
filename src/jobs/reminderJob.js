@@ -129,7 +129,7 @@ class ReminderJob {
               eventDateTime: eventDateTime,
               eventLocation: eventLocation,
               eventTimezone: event.start.timeZone,
-              eventDuration: eventDuration,
+              eventDuration: eventDuration.toString(),
               teacherName: teacherName,
             }
           )
