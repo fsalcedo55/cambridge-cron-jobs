@@ -5,6 +5,7 @@ const ReminderEmail = require("../templates/ReminderEmail")
 
 class EmailService {
   constructor(config) {
+    console.log("Initializing EmailService...")
     this.transporter = nodemailer.createTransport({
       service: "gmail",
       auth: config,
@@ -23,7 +24,24 @@ class EmailService {
       teacherName,
     }
   ) {
+    console.log(`Attempting to send email to ${to}`)
     try {
+      console.log(
+        "Email data:",
+        JSON.stringify(
+          {
+            studentName,
+            eventDateTime,
+            eventLocation,
+            eventTimezone,
+            eventDuration,
+            teacherName,
+          },
+          null,
+          2
+        )
+      )
+
       if (
         !studentName ||
         !eventDateTime ||
@@ -34,8 +52,6 @@ class EmailService {
       ) {
         throw new Error("Missing required email properties")
       }
-
-      console.log(`Attempting to send email to ${to}`)
 
       const emailHtml = ReactDOMServer.renderToStaticMarkup(
         React.createElement(ReminderEmail, {
@@ -55,13 +71,14 @@ class EmailService {
         html: emailHtml,
       }
 
-      console.log(`Mail options: ${JSON.stringify(mailOptions)}`)
+      console.log(`Mail options: ${JSON.stringify(mailOptions, null, 2)}`)
       const result = await this.transporter.sendMail(mailOptions)
       console.log(`Email sent to ${to}. Message ID: ${result.messageId}`)
       return true
     } catch (error) {
       console.error(`Failed to send email to ${to}:`, error)
-      throw error // Throw the error instead of returning false
+      console.error("Error stack:", error.stack)
+      throw error
     }
   }
 }

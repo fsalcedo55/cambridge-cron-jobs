@@ -1,26 +1,20 @@
 const { google } = require("googleapis")
+const config = require("../config")
 
 const SCOPES = ["https://www.googleapis.com/auth/calendar.readonly"]
 
 async function authorize() {
-  console.log("Environment variables:")
-  console.log("NODE_ENV:", process.env.NODE_ENV)
-  console.log("GOOGLE_CLIENT_EMAIL:", process.env.GOOGLE_CLIENT_EMAIL)
-  console.log(
-    "GOOGLE_PRIVATE_KEY:",
-    process.env.GOOGLE_PRIVATE_KEY
-      ? "Set (length: " + process.env.GOOGLE_PRIVATE_KEY.length + ")"
-      : "Not set"
-  )
+  console.log("Authorizing Google Calendar...")
+  console.log("Google config:", config.google)
 
-  const clientEmail = process.env.GOOGLE_CLIENT_EMAIL
-  const privateKey = process.env.GOOGLE_PRIVATE_KEY
+  const clientEmail = config.google.clientEmail
+  const privateKey = config.google.privateKey
 
   if (!clientEmail) {
-    throw new Error("GOOGLE_CLIENT_EMAIL environment variable is not set")
+    throw new Error("GOOGLE_CLIENT_EMAIL is not set in the config")
   }
   if (!privateKey) {
-    throw new Error("GOOGLE_PRIVATE_KEY environment variable is not set")
+    throw new Error("GOOGLE_PRIVATE_KEY is not set in the config")
   }
 
   const jwtClient = new google.auth.JWT(
@@ -35,6 +29,7 @@ async function authorize() {
 }
 
 async function getUpcomingEvents(auth, calendarId, timeMin, timeMax) {
+  console.log(`Fetching events for calendar ${calendarId}`)
   const calendar = google.calendar({ version: "v3", auth })
   const response = await calendar.events.list({
     calendarId: calendarId,

@@ -4,15 +4,18 @@ const config = require("../config/index")
 
 class ReminderJob {
   constructor() {
+    console.log("Initializing ReminderJob...")
     this.remindersSent = new Map()
     this.emailService = new EmailService(config.email)
   }
 
   async run() {
+    console.log("ReminderJob.run() started")
     try {
       console.log("Running reminder job class...")
       const auth = await authorize()
-      console.log("Authorization successful")
+      console.log("Google Calendar authorization successful")
+
       const now = new Date()
       const twoHoursFromNow = new Date(now.getTime() + config.reminderWindow)
       console.log(
@@ -20,8 +23,8 @@ class ReminderJob {
       )
 
       for (let calendarId of config.calendars) {
+        console.log(`Processing calendar: ${calendarId}`)
         try {
-          console.log(`Fetching events for calendar: ${calendarId}`)
           const events = await getUpcomingEvents(
             auth,
             calendarId,
@@ -31,28 +34,26 @@ class ReminderJob {
           console.log(
             `Found ${events.length} events for calendar ${calendarId}`
           )
+
           for (let event of events) {
             console.log(`Processing event: ${event.summary} (ID: ${event.id})`)
             await this.sendReminderForEvent(event)
           }
         } catch (error) {
-          console.error(
-            `Error processing calendar ${calendarId}:`,
-            error.message
-          )
-          if (error.response) {
-            console.error("Response data:", error.response.data)
-          }
+          console.error(`Error processing calendar ${calendarId}:`, error)
         }
       }
+
+      console.log("ReminderJob.run() completed successfully")
     } catch (error) {
-      console.error("Error in reminder job:", error.message)
-      console.error("Stack trace:", error.stack)
-      // You might want to add some error reporting here
+      console.error("Error in reminder job:", error)
     }
   }
 
   async sendReminderForEvent(event) {
+    console.log(`Sending reminder for event: ${event.summary}`)
+    // Add logging here
+    console.log(`Sending reminder for event: ${event.summary}`)
     if (event.summary && event.summary.toLowerCase().includes("cancel")) {
       console.log(`Skipping reminder for cancelled event: ${event.summary}`)
       return
