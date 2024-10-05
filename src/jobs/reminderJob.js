@@ -54,6 +54,51 @@ class ReminderJob {
     }
   }
 
+  async runTenHourReminder() {
+    console.log("ReminderJob.runTenHourReminder() started")
+    try {
+      console.log("Running 10-hour reminder job...")
+      const auth = await authorize()
+      console.log("Google Calendar authorization successful")
+
+      const now = new Date()
+      const twoHoursFromNow = new Date(now.getTime() + 2 * 60 * 60 * 1000)
+      const tenHoursFromNow = new Date(now.getTime() + 10 * 60 * 60 * 1000)
+      console.log(
+        `Checking for events between ${twoHoursFromNow.toISOString()} and ${tenHoursFromNow.toISOString()}`
+      )
+
+      for (let calendarId of config.calendars) {
+        console.log(`Processing calendar: ${calendarId}`)
+        try {
+          const events = await getUpcomingEvents(
+            auth,
+            calendarId,
+            twoHoursFromNow,
+            tenHoursFromNow
+          )
+          console.log(
+            `Found ${events.length} events for calendar ${calendarId}`
+          )
+
+          for (let event of events) {
+            try {
+              await this.sendReminderForEvent(event, true)
+            } catch (error) {
+              console.error(`Error processing event ${event.id}:`, error)
+            }
+          }
+        } catch (error) {
+          console.error(`Error processing calendar ${calendarId}:`, error)
+        }
+      }
+
+      console.log("ReminderJob.runTenHourReminder() completed successfully")
+    } catch (error) {
+      console.error("Error in 10-hour reminder job:", error)
+    }
+  }
+
   async sendReminderForEvent(event) {
     console.log(
       `Processing event: ${event.summary || "Unnamed event"} (ID: ${event.id})`
