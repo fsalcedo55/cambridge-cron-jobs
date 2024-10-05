@@ -10,7 +10,7 @@ console.log("Application starting...")
 const reminderJob = new ReminderJob()
 
 // Schedule the 2-hour reminder job to run every 15 minutes
-cron.schedule("* * * * *", async () => {
+cron.schedule("*/15 * * * *", async () => {
   console.log("Cron job triggered: Running 2-hour reminder job...")
   try {
     await reminderJob.run()
@@ -21,7 +21,7 @@ cron.schedule("* * * * *", async () => {
 })
 
 // Schedule the 10-hour reminder job to run every 15 minutes
-cron.schedule("* * * * *", async () => {
+cron.schedule("*/15 * * * *", async () => {
   console.log("Cron job triggered: Running 10-hour reminder job...")
   try {
     await reminderJob.runTenHourReminder()
