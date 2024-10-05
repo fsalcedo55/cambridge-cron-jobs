@@ -5,7 +5,7 @@ const nodemailer = require("nodemailer")
 
 jest.mock("nodemailer")
 jest.mock("date-fns-tz", () => ({
-  utcToZonedTime: jest.fn((date) => date),
+  formatInTimeZone: jest.fn((date) => `Mocked formatted date: ${date}`),
 }))
 
 describe("EmailService", () => {
@@ -31,6 +31,7 @@ describe("EmailService", () => {
       eventTimezone: "UTC",
       eventDuration: "60",
       teacherName: "Jane Smith",
+      isTenHourReminder: false,
     }
 
     const result = await emailService.sendEmail(to, subject, emailData)
@@ -41,7 +42,7 @@ describe("EmailService", () => {
       from: '"Spanish For Us" <spanishforuskids@gmail.com>',
       to,
       subject,
-      html: expect.any(String),
+      html: expect.stringContaining("Mocked formatted date:"),
     })
   })
 
@@ -59,6 +60,7 @@ describe("EmailService", () => {
         eventTimezone: "UTC",
         eventDuration: "60",
         teacherName: "Jane Smith",
+        isTenHourReminder: false,
       })
     ).rejects.toThrow("Test error")
 

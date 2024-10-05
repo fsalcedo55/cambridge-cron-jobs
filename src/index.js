@@ -9,14 +9,25 @@ console.log("Application starting...")
 
 const reminderJob = new ReminderJob()
 
-// Schedule the reminder job to run every 15 minutes
-cron.schedule("*/15 * * * *", async () => {
-  console.log("Cron job triggered: Running reminder job...")
+// Schedule the 2-hour reminder job to run every 15 minutes
+cron.schedule("* * * * *", async () => {
+  console.log("Cron job triggered: Running 2-hour reminder job...")
   try {
     await reminderJob.run()
-    console.log("Reminder job completed successfully")
+    console.log("2-hour reminder job completed successfully")
   } catch (error) {
-    console.error("Error in reminder job cron:", error)
+    console.error("Error in 2-hour reminder job cron:", error)
+  }
+})
+
+// Schedule the 10-hour reminder job to run every 15 minutes
+cron.schedule("* * * * *", async () => {
+  console.log("Cron job triggered: Running 10-hour reminder job...")
+  try {
+    await reminderJob.runTenHourReminder()
+    console.log("10-hour reminder job completed successfully")
+  } catch (error) {
+    console.error("Error in 10-hour reminder job cron:", error)
   }
 })
 
