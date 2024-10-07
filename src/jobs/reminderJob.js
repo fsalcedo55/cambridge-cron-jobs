@@ -5,7 +5,8 @@ const config = require("../config/index")
 class ReminderJob {
   constructor() {
     console.log("Initializing ReminderJob...")
-    this.remindersSent = new Map()
+    this.twoHourRemindersSent = new Map()
+    this.tenHourRemindersSent = new Map()
     this.emailService = new EmailService(config.email)
   }
 
@@ -99,7 +100,7 @@ class ReminderJob {
     }
   }
 
-  async sendReminderForEvent(event) {
+  async sendReminderForEvent(event, isTenHourReminder) {
     console.log(
       `Processing event: ${event.summary || "Unnamed event"} (ID: ${event.id})`
     )
@@ -161,7 +162,9 @@ class ReminderJob {
       })}`
     )
 
-    let notifiedEmails = this.remindersSent.get(eventId) || new Map()
+    let notifiedEmails = isTenHourReminder
+      ? this.tenHourRemindersSent.get(eventId) || new Map()
+      : this.twoHourRemindersSent.get(eventId) || new Map()
 
     if (!event.attendees || event.attendees.length === 0) {
       console.log(`No attendees found for event: ${event.summary}`)
@@ -240,11 +243,16 @@ class ReminderJob {
       }
     }
 
-    this.remindersSent.set(eventId, notifiedEmails)
+    if (isTenHourReminder) {
+      this.tenHourRemindersSent.set(eventId, notifiedEmails)
+    } else {
+      this.twoHourRemindersSent.set(eventId, notifiedEmails)
+    }
   }
 
   clearReminders() {
-    this.remindersSent.clear()
+    this.twoHourRemindersSent.clear()
+    this.tenHourRemindersSent.clear()
     console.log("Cleared all stored reminders")
   }
 }
