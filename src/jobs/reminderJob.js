@@ -162,9 +162,7 @@ class ReminderJob {
       })}`
     )
 
-    let notifiedEmails = isTenHourReminder
-      ? this.tenHourRemindersSent.get(eventId) || new Map()
-      : this.twoHourRemindersSent.get(eventId) || new Map()
+    console.log(`Raw attendees data: ${JSON.stringify(event.attendees)}`)
 
     if (!event.attendees || event.attendees.length === 0) {
       console.log(`No attendees found for event: ${event.summary}`)
@@ -172,6 +170,18 @@ class ReminderJob {
     }
 
     console.log(`Number of attendees: ${event.attendees.length}`)
+    console.log(
+      `Attendees: ${JSON.stringify(
+        event.attendees.map((a) => ({
+          email: a.email,
+          responseStatus: a.responseStatus,
+        }))
+      )}`
+    )
+
+    let notifiedEmails = isTenHourReminder
+      ? this.tenHourRemindersSent.get(eventId) || new Map()
+      : this.twoHourRemindersSent.get(eventId) || new Map()
 
     for (let attendee of event.attendees) {
       if (attendee.email === organizerEmail) {

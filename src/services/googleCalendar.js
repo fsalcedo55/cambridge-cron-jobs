@@ -1,7 +1,14 @@
 const { google } = require("googleapis")
+const { OAuth2Client } = require("google-auth-library")
 const config = require("../config")
 
 const SCOPES = ["https://www.googleapis.com/auth/calendar.readonly"]
+
+const oauth2Client = new OAuth2Client(
+  config.google.clientId,
+  config.google.clientSecret,
+  config.google.redirectUri
+)
 
 async function authorize() {
   console.log("Authorizing Google Calendar...")
@@ -11,25 +18,16 @@ async function authorize() {
   )
   console.log("Node environment:", process.env.NODE_ENV)
 
-  const clientEmail = config.google.clientEmail
-  const privateKey = config.google.privateKey
-
-  if (!clientEmail) {
-    throw new Error("GOOGLE_CLIENT_EMAIL is not set in the config")
+  // Check if we have stored tokens
+  if (config.google.accessToken && config.google.refreshToken) {
+    oauth2Client.setCredentials({
+      access_token: config.google.accessToken,
+      refresh_token: config.google.refreshToken,
+    })
+    return oauth2Client
+  } else {
+    throw new Error("No stored tokens. Please authenticate first.")
   }
-  if (!privateKey) {
-    throw new Error("GOOGLE_PRIVATE_KEY is not set in the config")
-  }
-
-  const jwtClient = new google.auth.JWT(
-    clientEmail,
-    null,
-    privateKey.replace(/\\n/g, "\n"),
-    SCOPES
-  )
-
-  await jwtClient.authorize()
-  return jwtClient
 }
 
 async function getUpcomingEvents(auth, calendarId, timeMin, timeMax) {
@@ -41,9 +39,37 @@ async function getUpcomingEvents(auth, calendarId, timeMin, timeMax) {
     timeMax: timeMax.toISOString(),
     singleEvents: true,
     orderBy: "startTime",
+    fields:
+      "items(id,summary,description,start,end,attendees,organizer,location)",
   })
 
+  console.log("Raw API response:", JSON.stringify(response.data))
   return response.data.items || []
 }
 
-module.exports = { authorize, getUpcomingEvents }
+function getAuthUrl() {
+  return oauth2Client.generateAuthUrl({
+    access_type: "offline",
+    prompt: "consent",
+    scope: SCOPES,
+  })
+}
+
+async function getTokens(code) {
+  console.log("Getting tokens for code:", code)
+  try {
+    const { tokens } = await oauth2Client.getToken(code)
+    console.log("Tokens received:", tokens)
+    return { tokens }
+  } catch (error) {
+    console.error("Error getting tokens:", error)
+    throw error
+  }
+}
+
+module.exports = {
+  authorize,
+  getUpcomingEvents,
+  getAuthUrl,
+  getTokens,
+}

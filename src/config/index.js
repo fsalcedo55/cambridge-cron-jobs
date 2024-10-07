@@ -23,9 +23,16 @@ const config = {
   reminderWindow: 7200000, // 2 hours in milliseconds
   tenHourReminderWindow: 36000000, // 10 hours in milliseconds
   google: {
-    clientEmail: process.env.GOOGLE_CLIENT_EMAIL,
-    privateKey: process.env.GOOGLE_PRIVATE_KEY,
+    clientId: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    redirectUri:
+      process.env.GOOGLE_REDIRECT_URI ||
+      "http://localhost:3000/auth/google/callback",
+    accessToken: process.env.GOOGLE_ACCESS_TOKEN,
+    refreshToken: process.env.GOOGLE_REFRESH_TOKEN,
   },
 }
+
+console.log("Loaded config:", JSON.stringify(config, null, 2))
 
 module.exports = config
