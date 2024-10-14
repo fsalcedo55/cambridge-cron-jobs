@@ -1,4 +1,5 @@
 const dotenv = require("dotenv")
+const NODE_ENV = process.env.NODE_ENV || "development"
 
 dotenv.config()
 
@@ -8,17 +9,23 @@ const config = {
     pass: process.env.EMAIL_PASS,
   },
   teacherEmails: [
-    process.env.TEACHER_EMAIL_1,
-    process.env.TEACHER_EMAIL_2,
-    process.env.TEACHER_EMAIL_3,
-    process.env.TEACHER_EMAIL_4,
+    ...(NODE_ENV === "development"
+      ? [process.env.TEACHER_EMAIL_4]
+      : [
+          process.env.TEACHER_EMAIL_1,
+          process.env.TEACHER_EMAIL_2,
+          process.env.TEACHER_EMAIL_3,
+        ]),
   ].filter(Boolean),
   calendars: [
     "primary",
-    process.env.TEACHER_EMAIL_1,
-    process.env.TEACHER_EMAIL_2,
-    process.env.TEACHER_EMAIL_3,
-    process.env.TEACHER_EMAIL_4,
+    ...(NODE_ENV === "development"
+      ? [process.env.TEACHER_EMAIL_4]
+      : [
+          process.env.TEACHER_EMAIL_1,
+          process.env.TEACHER_EMAIL_2,
+          process.env.TEACHER_EMAIL_3,
+        ]),
   ],
   reminderWindow: 7200000, // 2 hours in milliseconds
   tenHourReminderWindow: 36000000, // 10 hours in milliseconds
@@ -31,6 +38,8 @@ const config = {
     accessToken: process.env.GOOGLE_ACCESS_TOKEN,
     refreshToken: process.env.GOOGLE_REFRESH_TOKEN,
   },
+  isDevelopment: NODE_ENV === "development",
+  isProduction: NODE_ENV === "production",
 }
 
 console.log("Loaded config:", JSON.stringify(config, null, 2))
