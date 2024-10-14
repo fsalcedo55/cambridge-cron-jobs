@@ -107,25 +107,70 @@ const ReminderEmail = ({
               alt="Spanish For Us Logo"
               style={{
                 display: "block",
-                marginBottom: "20px",
+                marginBottom: "30px",
                 marginTop: "10px",
               }}
             />
           </div>
           <div>
-            <p style={{ fontSize: "12px", color: "#666", marginBottom: "0px" }}>
+            <hr
+              style={{
+                border: "none",
+                borderTop: "1px solid rgba(0, 0, 0, 0.75)",
+                height: "1px",
+                background: "none",
+              }}
+            />
+
+            <p style={{ fontSize: "12px", fontStyle: "italic", color: "#666" }}>
+              Want free classes? Refer a friend! <br />
+              Copy and send them this link:{" "}
+              <a
+                href="https://tally.so/r/w4LbEb"
+                style={{
+                  wordBreak: "break-all",
+                  backgroundColor: "#f0f0f0",
+                  padding: "5px",
+                  display: "inline-block",
+                  margin: "5px 0",
+                  borderRadius: "3px",
+                }}
+              >
+                https://tally.so/r/w4LbEb
+              </a>
+              <br />
+              When your friend signs up, you&apos;ll both receive 2 free
+              classes! 🎉 ¡Fantástico!
+            </p>
+            <hr
+              style={{
+                border: "none",
+                borderTop: "1px solid rgba(0, 0, 0, 0.75)",
+                height: "1px",
+                background: "none",
+              }}
+            />
+          </div>
+          <div>
+            <p style={{ fontSize: "10px", color: "#666", marginBottom: "0px" }}>
               <strong>Questions or concerns?</strong>
             </p>
             <p
               style={{
-                fontSize: "12px",
+                fontSize: "10px",
                 color: "#666",
                 marginBottom: "20px",
                 marginTop: "0px",
               }}
             >
-              Please don&apos;t hesitate to reply to this email or call/text
-              786-588-4590.
+              Please don&apos;t hesitate to reply to this email or call/text{" "}
+              <a
+                href="tel:786-588-4590"
+                style={{ color: "#666", textDecoration: "underline" }}
+              >
+                786-588-4590
+              </a>
+              .
             </p>
           </div>
         </div>
