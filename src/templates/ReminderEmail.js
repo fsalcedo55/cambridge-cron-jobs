@@ -139,8 +139,8 @@ const ReminderEmail = ({
                 https://tally.so/r/w4LbEb
               </a>
               <br />
-              When your friend signs up, you&apos;ll both receive 2 free
-              classes! 🎉 ¡Fantástico!
+              When your friend signs up for their first month, you&apos;ll both
+              receive 2 free bonus classes!
             </p>
             <hr
               style={{
