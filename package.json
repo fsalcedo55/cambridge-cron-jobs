@@ -9,6 +9,7 @@
     "test": "NODE_ENV=test jest"
   },
   "dependencies": {
+    "@sendgrid/mail": "^8.1.5",
     "date-fns": "^2.30.0",
     "date-fns-tz": "^2.0.0",
     "dotenv": "^16.4.5",
