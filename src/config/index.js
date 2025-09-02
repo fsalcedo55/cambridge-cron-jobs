@@ -15,6 +15,7 @@ const config = {
           process.env.TEACHER_EMAIL_1,
           process.env.TEACHER_EMAIL_2,
           process.env.TEACHER_EMAIL_3,
+          process.env.TEACHER_EMAIL_5,
         ]),
   ].filter(Boolean),
   calendars: [
@@ -25,6 +26,7 @@ const config = {
           process.env.TEACHER_EMAIL_1,
           process.env.TEACHER_EMAIL_2,
           process.env.TEACHER_EMAIL_3,
+          process.env.TEACHER_EMAIL_5,
         ]),
   ],
   reminderWindow: 7200000, // 2 hours in milliseconds

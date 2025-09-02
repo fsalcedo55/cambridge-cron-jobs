@@ -134,6 +134,8 @@ class ReminderJob {
           return process.env.TEACHER_NAME_3
         case process.env.TEACHER_EMAIL_4:
           return process.env.TEACHER_NAME_4
+        case process.env.TEACHER_EMAIL_5:
+          return process.env.TEACHER_NAME_5
         default:
           return "TBA"
       }
