@@ -24,6 +24,12 @@ class ReminderJob {
       )
 
       for (let calendarId of config.calendars) {
+        // Skip undefined, null, or empty calendar IDs
+        if (!calendarId || calendarId.trim() === '') {
+          console.warn(`⚠️  Skipping invalid calendar ID: ${calendarId}`)
+          continue
+        }
+        
         console.log(`Processing calendar: ${calendarId}`)
         try {
           const events = await getUpcomingEvents(
@@ -70,6 +76,12 @@ class ReminderJob {
       )
 
       for (let calendarId of config.calendars) {
+        // Skip undefined, null, or empty calendar IDs
+        if (!calendarId || calendarId.trim() === '') {
+          console.warn(`⚠️  Skipping invalid calendar ID: ${calendarId}`)
+          continue
+        }
+        
         console.log(`Processing calendar: ${calendarId}`)
         try {
           const events = await getUpcomingEvents(

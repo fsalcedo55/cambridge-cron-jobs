@@ -28,7 +28,7 @@ const config = {
           process.env.TEACHER_EMAIL_3,
           process.env.TEACHER_EMAIL_5,
         ]),
-  ],
+  ].filter(Boolean),
   reminderWindow: 7200000, // 2 hours in milliseconds
   tenHourReminderWindow: 36000000, // 10 hours in milliseconds
   google: {
