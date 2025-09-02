@@ -11,8 +11,8 @@ class EmailService {
       auth: config,
       // Add basic timeouts to match Railway's network characteristics
       connectionTimeout: 30000, // 30 seconds
-      greetingTimeout: 30000,   // 30 seconds
-      socketTimeout: 30000,     // 30 seconds
+      greetingTimeout: 30000, // 30 seconds
+      socketTimeout: 30000, // 30 seconds
     })
   }
 
