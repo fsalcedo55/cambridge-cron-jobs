@@ -229,6 +229,7 @@ class ReminderJob {
               eventTimezone: event.start.timeZone,
               eventDuration: eventDuration.toString(),
               teacherName: teacherName,
+              isTenHourReminder: !!isTenHourReminder,
             }
           )
 

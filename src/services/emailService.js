@@ -1,23 +1,20 @@
 const React = require("react")
 const ReactDOMServer = require("react-dom/server")
 const nodemailer = require("nodemailer")
-const sgMail = require("@sendgrid/mail")
+const { Resend } = require("resend")
 const ReminderEmail = require("../templates/ReminderEmail")
 
 class EmailService {
   constructor(config) {
     console.log("Initializing EmailService...")
 
-    // Check if SendGrid API key is available
-    this.useSendGrid = !!process.env.SENDGRID_API_KEY
+    // Check if Resend API key is available
+    this.useResend = !!process.env.RESEND_API_KEY
 
-    if (this.useSendGrid) {
-      console.log("🚀 Using SendGrid for email delivery")
-      sgMail.setApiKey(process.env.SENDGRID_API_KEY)
-      this.fromEmail =
-        process.env.SENDGRID_FROM_EMAIL ||
-        config.user ||
-        "spanishforuskids@gmail.com"
+    if (this.useResend) {
+      console.log("🚀 Using Resend for email delivery")
+      this.resend = new Resend(process.env.RESEND_API_KEY)
+      this.fromEmail = "no-reply@spanishforuskids.com"
     } else {
       console.log("📧 Using Gmail SMTP for email delivery")
       this.transporter = nodemailer.createTransport({
@@ -41,11 +38,12 @@ class EmailService {
       eventTimezone,
       eventDuration,
       teacherName,
+      isTenHourReminder = false,
     }
   ) {
     console.log(
       `Attempting to send email to ${to} using ${
-        this.useSendGrid ? "SendGrid" : "Gmail SMTP"
+        this.useResend ? "Resend" : "Gmail SMTP"
       }`
     )
 
@@ -60,6 +58,7 @@ class EmailService {
             eventTimezone,
             eventDuration,
             teacherName,
+            isTenHourReminder,
           },
           null,
           2
@@ -85,26 +84,43 @@ class EmailService {
           eventTimezone,
           eventDuration,
           teacherName,
+          isTenHourReminder,
         })
       )
 
-      if (this.useSendGrid) {
-        // Use SendGrid API (HTTPS)
-        const msg = {
-          to: to,
-          from: {
-            email: this.fromEmail,
-            name: "Spanish For Us",
-          },
+      if (this.useResend) {
+        // Use Resend API (HTTPS)
+        const email = {
+          from: `Spanish For Us <${this.fromEmail}>`,
+          to: [to],
           subject: subject,
           html: emailHtml,
         }
 
-        console.log(`SendGrid message: ${JSON.stringify(msg, null, 2)}`)
-        const response = await sgMail.send(msg)
-        console.log(
-          `Email sent via SendGrid to ${to}. Response: ${response[0].statusCode}`
-        )
+        console.log(`Resend message: ${JSON.stringify(email, null, 2)}`)
+        const { data, error } = await this.resend.emails.send(email)
+
+        if (error) {
+          // Handle rate limiting by waiting and retrying once
+          if (error.name === "rate_limit_exceeded") {
+            console.log("Rate limit hit, waiting 1 second before retry...")
+            await new Promise((resolve) => setTimeout(resolve, 1000))
+            const { data: retryData, error: retryError } =
+              await this.resend.emails.send(email)
+            if (retryError) {
+              throw new Error(
+                `Resend error after retry: ${JSON.stringify(retryError)}`
+              )
+            }
+            console.log(
+              `Email sent via Resend to ${to} after retry. Message ID: ${retryData.id}`
+            )
+            return true
+          }
+          throw new Error(`Resend error: ${JSON.stringify(error)}`)
+        }
+
+        console.log(`Email sent via Resend to ${to}. Message ID: ${data.id}`)
         return true
       } else {
         // Use Gmail SMTP (fallback for local development)
@@ -126,8 +142,12 @@ class EmailService {
       console.error(`Failed to send email to ${to}:`, error)
       console.error("Error stack:", error.stack)
 
-      if (this.useSendGrid && error.response) {
-        console.error("SendGrid error details:", error.response.body)
+      if (
+        this.useResend &&
+        error.message &&
+        error.message.includes("Resend error")
+      ) {
+        console.error("Resend error details:", error.message)
       }
 
       return false // Return false instead of throwing, so job continues
